@@ -19,6 +19,7 @@ import org.openjdk.jmh.infra.Blackhole;
 
 public class PSLBenchmarks {
 
+	@Benchmark
 	public void Peacemaker(PeacemakerState state, Blackhole blackhole) throws Exception {
 
 		PeacemakerResource resource = (PeacemakerResource) state.resourceSet.createResource(state.conflictedURI);
@@ -27,6 +28,7 @@ public class PSLBenchmarks {
 		blackhole.consume(resource.getConflicts());
 	}
 
+	@Benchmark
 	public void EMFDiffMerge(ThreeModelVersionsState state, Blackhole blackhole) throws Exception {
 
 		IEditableModelScope targetScope =
@@ -42,6 +44,7 @@ public class PSLBenchmarks {
 		blackhole.consume(comparison.getRemainingDifferences());
 	}
 
+	@Benchmark
 	public void EMFCompare(ThreeModelVersionsState state, Blackhole blackhole) throws Exception {
 
 		IComparisonScope scope = new DefaultComparisonScope(

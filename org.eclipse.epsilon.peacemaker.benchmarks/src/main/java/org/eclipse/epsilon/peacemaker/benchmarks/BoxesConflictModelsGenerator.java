@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.epsilon.peacemaker.benchmarks.PSLConflictModelsGenerator.ModelsPath;
 import org.eclipse.epsilon.peacemaker.util.CopyUtils;
 
 import boxes.Box;
@@ -51,10 +52,9 @@ public class BoxesConflictModelsGenerator {
 	public static final String RIGHT = "right";
 	public static final String CONFLICTED = "conflicted";
 
-	@FunctionalInterface
-	public interface ModelsPath {
-		public String getPath(int numElems, int numConflicts, String suffix);
-	}
+	public static final String UPDATE_DELETE_BOX1 = "UpdateDeleteBox1";
+	public static final String UPDATE_DELETE_BOX10 = "UpdateDeleteBox10";
+	public static final String UPDATE_DELETE_BOX20 = "UpdateDeleteBox20";
 
 	public static ModelsPath DOUBLEUPDATE_BOXES_PATH =
 			(numTasks, numConflicts, suffix) -> String.format("models/boxes-doubleupdate/%delems-%dconflicts_%s.model",
@@ -87,6 +87,18 @@ public class BoxesConflictModelsGenerator {
 		default:
 			return null;
 		}
+	}
+
+	public static ModelsPath getModelsPath(String modelsPathName) {
+		switch (modelsPathName) {
+		case UPDATE_DELETE_BOX1:
+			return UPDATEDELETE_BOX1_PATH;
+		case UPDATE_DELETE_BOX10:
+			return UPDATEDELETE_BOX10_PATH;
+		case UPDATE_DELETE_BOX20:
+			return UPDATEDELETE_BOX20_PATH;
+		}
+		return null;
 	}
 
 	/** number of elems and conflicts per experiment */

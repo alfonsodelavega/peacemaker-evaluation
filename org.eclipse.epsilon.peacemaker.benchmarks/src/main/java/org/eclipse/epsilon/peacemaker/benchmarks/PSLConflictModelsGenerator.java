@@ -53,33 +53,44 @@ public class PSLConflictModelsGenerator {
 	public static final String RIGHT = "right";
 	public static final String CONFLICTED = "conflicted";
 
+	public static final String UPDATE_DELETE_TASKS = "UpdateDeleteTasks";
+	public static final String DOUBLE_UPDATE_TASKS = "DoubleUpdateTasks";
+
+	public static final String UPDATEDELETE_TAKS_10PERC_EXTRA_CHANGES = "UpdateDeleteTasks10PercChanges";
+	public static final String UPDATEDELETE_TAKS_50PERC_EXTRA_CHANGES = "UpdateDeleteTasks50PercChanges";
+	public static final String UPDATEDELETE_TAKS_100PERC_EXTRA_CHANGES = "UpdateDeleteTasks100PercChanges";
+
+	public static final String UPDATEDELETE_TAKS_10PERC_CONFLICTS = "UpdateDeleteTasks10PercConflicts";
+	public static final String UPDATEDELETE_TAKS_50PERC_CONFLICTS = "UpdateDeleteTasks50PercConflicts";
+	public static final String UPDATEDELETE_TAKS_100PERC_CONFLICTS = "UpdateDeleteTasks100PercConflicts";
+
 	@FunctionalInterface
-	public interface TaskModelsPath {
+	public interface ModelsPath {
 		public String getPath(int numTasks, int numConflicts, String suffix);
 	}
 
-	public static TaskModelsPath DOUBLEUPDATE_TAKS_PATH = (numTasks, numConflicts, suffix) 
+	public static ModelsPath DOUBLEUPDATE_TAKS_PATH = (numTasks, numConflicts, suffix) 
 			-> String.format("models/psl-doubleupdateTasks/%delems-%dconflicts_%s.model",
 					numTasks, numConflicts, suffix);
 			
-	public static TaskModelsPath UPDATEDELETE_TAKS_PATH = (numTasks, numConflicts, suffix) 
+	public static ModelsPath UPDATEDELETE_TAKS_PATH = (numTasks, numConflicts, suffix) 
 			-> String.format("models/psl-updatedeleteTasks/%delems-%dconflicts_%s.model",
 					numTasks, numConflicts, suffix);
 
 	// numConflicts is irrelevant for these models
-	public static TaskModelsPath UPDATEDELETE_TAKS_10PERC_EXTRA_CHANGES_PATH = (numTasks, numConflicts, suffix) 
+	public static ModelsPath UPDATEDELETE_TAKS_10PERC_EXTRA_CHANGES_PATH = (numTasks, numConflicts, suffix) 
 	-> String.format("models/psl-updatedeleteTasks-extraChanges/%delems-10percChanges_%s.model",
 					numTasks, suffix);
 
-	public static TaskModelsPath UPDATEDELETE_TAKS_50PERC_EXTRA_CHANGES_PATH = (numTasks, numConflicts, suffix) 
+	public static ModelsPath UPDATEDELETE_TAKS_50PERC_EXTRA_CHANGES_PATH = (numTasks, numConflicts, suffix) 
 	-> String.format("models/psl-updatedeleteTasks-extraChanges/%delems-50percChanges_%s.model",
 					numTasks, suffix);
 
-	public static TaskModelsPath UPDATEDELETE_TAKS_100PERC_EXTRA_CHANGES_PATH = (numTasks, numConflicts, suffix) 
+	public static ModelsPath UPDATEDELETE_TAKS_100PERC_EXTRA_CHANGES_PATH = (numTasks, numConflicts, suffix) 
 	-> String.format("models/psl-updatedeleteTasks-extraChanges/%delems-100percChanges_%s.model",
 					numTasks, suffix);
-			
-	public static TaskModelsPath getUpdateDeleteExtraChangesPath(int percentage) {
+
+	public static ModelsPath getUpdateDeleteExtraChangesPath(int percentage) {
 		switch (percentage) {
 		case 10:
 			return UPDATEDELETE_TAKS_10PERC_EXTRA_CHANGES_PATH;
@@ -93,19 +104,19 @@ public class PSLConflictModelsGenerator {
 	}
 	
 	// numConflicts is irrelevant for these models
-	public static TaskModelsPath UPDATEDELETE_TAKS_10PERC_CONFLICTS_PATH =
+	public static ModelsPath UPDATEDELETE_TAKS_10PERC_CONFLICTS_PATH =
 			(numTasks, numConflicts, suffix) -> String.format("models/psl-updatedeleteTasks-conflicts/%delems-10percConflicts_%s.model",
 					numTasks, suffix);
 
-	public static TaskModelsPath UPDATEDELETE_TAKS_50PERC_CONFLICTS_PATH =
+	public static ModelsPath UPDATEDELETE_TAKS_50PERC_CONFLICTS_PATH =
 			(numTasks, numConflicts, suffix) -> String.format("models/psl-updatedeleteTasks-conflicts/%delems-50percConflicts_%s.model",
 					numTasks, suffix);
 
-	public static TaskModelsPath UPDATEDELETE_TAKS_100PERC_CONFLICTS_PATH =
+	public static ModelsPath UPDATEDELETE_TAKS_100PERC_CONFLICTS_PATH =
 			(numTasks, numConflicts, suffix) -> String.format("models/psl-updatedeleteTasks-conflicts/%delems-100percConflicts_%s.model",
 					numTasks, suffix);
 
-	public static TaskModelsPath getUpdateDeletePercentConflicts(int percentage) {
+	public static ModelsPath getUpdateDeletePercentConflicts(int percentage) {
 		switch (percentage) {
 		case 10:
 			return UPDATEDELETE_TAKS_10PERC_CONFLICTS_PATH;
@@ -116,6 +127,30 @@ public class PSLConflictModelsGenerator {
 		default:
 			return null;
 		}
+	}
+
+	public static ModelsPath getModelsPath(String modelsPathName) {
+		switch (modelsPathName) {
+		case UPDATE_DELETE_TASKS:
+			return UPDATEDELETE_TAKS_PATH;
+		case DOUBLE_UPDATE_TASKS:
+			return DOUBLEUPDATE_TAKS_PATH;
+
+		case UPDATEDELETE_TAKS_10PERC_EXTRA_CHANGES:
+			return UPDATEDELETE_TAKS_10PERC_EXTRA_CHANGES_PATH;
+		case UPDATEDELETE_TAKS_50PERC_EXTRA_CHANGES:
+			return UPDATEDELETE_TAKS_50PERC_EXTRA_CHANGES_PATH;
+		case UPDATEDELETE_TAKS_100PERC_EXTRA_CHANGES:
+			return UPDATEDELETE_TAKS_100PERC_EXTRA_CHANGES_PATH;
+
+		case UPDATEDELETE_TAKS_10PERC_CONFLICTS:
+			return UPDATEDELETE_TAKS_10PERC_CONFLICTS_PATH;
+		case UPDATEDELETE_TAKS_50PERC_CONFLICTS:
+			return UPDATEDELETE_TAKS_50PERC_CONFLICTS_PATH;
+		case UPDATEDELETE_TAKS_100PERC_CONFLICTS:
+			return UPDATEDELETE_TAKS_100PERC_CONFLICTS_PATH;
+		}
+		return null;
 	}
 
 	/** number of tasks and conflicts per experiment */
@@ -203,7 +238,7 @@ public class PSLConflictModelsGenerator {
 	 * Creates conflict models where tasks with conflicts have their efforts modified
 	 */
 	public void createUpdateDeleteTasks(int numTasks, int numConflicts,
-			TaskModelsPath modelsPath) throws Exception {
+			ModelsPath modelsPath) throws Exception {
 
 		String ancestorPath = modelsPath.getPath(numTasks, numConflicts, ANCESTOR);
 		String leftPath = modelsPath.getPath(numTasks, numConflicts, LEFT);
@@ -252,7 +287,7 @@ public class PSLConflictModelsGenerator {
 	public void createUpdateDeleteTasksPercentageConflicts(
 			int numTasks, int percentConflicts) throws Exception {
 
-		TaskModelsPath modelsPath = getUpdateDeletePercentConflicts(percentConflicts);
+		ModelsPath modelsPath = getUpdateDeletePercentConflicts(percentConflicts);
 
 		int numConflicts = numTasks * percentConflicts / 100;
 
@@ -265,7 +300,7 @@ public class PSLConflictModelsGenerator {
 	public void createUpdateDeleteTasksWithExtraChanges(
 			int numTasks, int percentChanges) throws Exception {
 
-		TaskModelsPath modelsPath = getUpdateDeleteExtraChangesPath(percentChanges);
+		ModelsPath modelsPath = getUpdateDeleteExtraChangesPath(percentChanges);
 
 		int numConflicts = 10;
 		int numExtraChanges = percentChanges != 100 ? numTasks * percentChanges / 100 : numTasks - numConflicts;
@@ -372,13 +407,5 @@ public class PSLConflictModelsGenerator {
 			ancestorRoot.getTasks().add(task);
 			ancestorResource.setID(task, "taskID" + t);
 		}
-	}
-
-	public static TaskModelsPath getModelsPath(String modelsPathName) {
-		switch (modelsPathName) {
-		case "UpdateDeleteTasks":
-			return UPDATEDELETE_TAKS_PATH;
-		}
-		return null;
 	}
 }

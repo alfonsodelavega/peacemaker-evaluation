@@ -6,7 +6,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.epsilon.peacemaker.benchmarks.PSLConflictModelsGenerator.TaskModelsPath;
+import org.eclipse.epsilon.peacemaker.benchmarks.PSLConflictModelsGenerator.ModelsPath;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
@@ -18,10 +18,14 @@ import boxes.BoxesPackage;
 import psl.PslPackage;
 
 @State(Scope.Thread)
-public class ThreeModelVersionsState {
+public class BoxesThreeModelVersionsState {
 
 	// for preparation
-	@Param({ "UpdateDeleteTasks" })
+	@Param({
+			BoxesConflictModelsGenerator.UPDATE_DELETE_BOX1,
+			BoxesConflictModelsGenerator.UPDATE_DELETE_BOX10,
+			BoxesConflictModelsGenerator.UPDATE_DELETE_BOX20
+	})
 	public String modelsPathName;
 
 	@Param({ "1000", "2000", "5000", "10000", "15000", "30000", "50000", "100000", "150000", "200000" })
@@ -39,7 +43,7 @@ public class ThreeModelVersionsState {
 	@Setup(Level.Trial)
 	public void prepareURIs() {
 
-		TaskModelsPath modelsPath = PSLConflictModelsGenerator.getModelsPath(modelsPathName);
+		ModelsPath modelsPath = BoxesConflictModelsGenerator.getModelsPath(modelsPathName);
 
 		leftURI = URI.createFileURI(modelsPath.getPath(
 				numElems, numConflicts, PSLConflictModelsGenerator.LEFT));

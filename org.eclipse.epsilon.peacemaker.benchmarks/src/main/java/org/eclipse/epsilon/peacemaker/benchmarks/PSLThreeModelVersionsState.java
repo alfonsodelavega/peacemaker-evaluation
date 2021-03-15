@@ -6,7 +6,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.epsilon.peacemaker.PeacemakerResourceFactory;
 import org.eclipse.epsilon.peacemaker.benchmarks.PSLConflictModelsGenerator.ModelsPath;
 import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Param;
@@ -19,7 +18,7 @@ import boxes.BoxesPackage;
 import psl.PslPackage;
 
 @State(Scope.Thread)
-public class PeacemakerState {
+public class PSLThreeModelVersionsState {
 
 	// for preparation
 	@Param({
@@ -32,11 +31,7 @@ public class PeacemakerState {
 
 			PSLConflictModelsGenerator.UPDATEDELETE_TAKS_10PERC_CONFLICTS,
 			PSLConflictModelsGenerator.UPDATEDELETE_TAKS_50PERC_CONFLICTS,
-			PSLConflictModelsGenerator.UPDATEDELETE_TAKS_100PERC_CONFLICTS,
-
-			BoxesConflictModelsGenerator.UPDATE_DELETE_BOX1,
-			BoxesConflictModelsGenerator.UPDATE_DELETE_BOX10,
-			BoxesConflictModelsGenerator.UPDATE_DELETE_BOX20
+			PSLConflictModelsGenerator.UPDATEDELETE_TAKS_100PERC_CONFLICTS
 	})
 	public String modelsPathName;
 
@@ -48,26 +43,26 @@ public class PeacemakerState {
 
 	// used in the benchmark
 	public ResourceSet resourceSet;
-	public URI conflictedURI;
+	public URI leftURI;
+	public URI rightURI;
+	public URI ancestorURI;
 
 	@Setup(Level.Trial)
 	public void prepareURIs() {
+
 		ModelsPath modelsPath = PSLConflictModelsGenerator.getModelsPath(modelsPathName);
 
-		if (modelsPath == null) {
-			modelsPath = BoxesConflictModelsGenerator.getModelsPath(modelsPathName);
-		}
-
-		conflictedURI = URI.createFileURI(
-				modelsPath.getPath(numElems, numConflicts, PSLConflictModelsGenerator.CONFLICTED));
+		leftURI = URI.createFileURI(modelsPath.getPath(
+				numElems, numConflicts, PSLConflictModelsGenerator.LEFT));
+		rightURI = URI.createFileURI(modelsPath.getPath(
+				numElems, numConflicts, PSLConflictModelsGenerator.RIGHT));
+		ancestorURI = URI.createFileURI(modelsPath.getPath(
+				numElems, numConflicts, PSLConflictModelsGenerator.ANCESTOR));
 	}
 
 	@Setup(Level.Iteration)
 	public void prepareResourceSet() throws Exception {
 		resourceSet = getResourceSet();
-
-		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(
-				"*", new PeacemakerResourceFactory());
 	}
 
 	@TearDown(Level.Iteration)

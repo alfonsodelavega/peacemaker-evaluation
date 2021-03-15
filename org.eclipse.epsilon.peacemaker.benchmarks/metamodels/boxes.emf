@@ -1,0 +1,49 @@
+@namespace(uri="boxes", prefix="")
+package boxes;
+
+class Boxes {
+	val Box[*] boxes;
+}
+
+abstract class Box {
+}
+
+class Box1 extends Box {
+	attr String thing1;
+}
+
+class Box10 extends Box {
+	attr String thing1;
+	attr String thing2;
+	attr String thing3;
+	attr String thing4;
+	attr String thing5;
+	attr String thing6;
+	attr String thing7;
+	attr String thing8;
+	attr String thing9;
+	attr String thing10;
+}
+
+class Box20 extends Box {
+	attr String thing1;
+	attr String thing2;
+	attr String thing3;
+	attr String thing4;
+	attr String thing5;
+	attr String thing6;
+	attr String thing7;
+	attr String thing8;
+	attr String thing9;
+	attr String thing10;
+	attr String thing11;
+	attr String thing12;
+	attr String thing13;
+	attr String thing14;
+	attr String thing15;
+	attr String thing16;
+	attr String thing17;
+	attr String thing18;
+	attr String thing19;
+	attr String thing20;
+}

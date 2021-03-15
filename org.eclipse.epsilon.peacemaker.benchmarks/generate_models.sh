@@ -1,0 +1,2 @@
+java -cp target/benchmarks.jar org.eclipse.epsilon.peacemaker.benchmarks.PSLConflictModelsGenerator
+java -cp target/benchmarks.jar org.eclipse.epsilon.peacemaker.benchmarks.BoxesConflictModelsGenerator

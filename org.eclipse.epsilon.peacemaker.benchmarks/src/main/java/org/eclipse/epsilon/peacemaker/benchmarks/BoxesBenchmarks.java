@@ -9,7 +9,6 @@ import org.eclipse.emf.compare.diff.IDiffEngine;
 import org.eclipse.emf.compare.diff.IDiffProcessor;
 import org.eclipse.emf.compare.scope.DefaultComparisonScope;
 import org.eclipse.emf.compare.scope.IComparisonScope;
-import org.eclipse.emf.diffmerge.api.scopes.IEditableModelScope;
 import org.eclipse.emf.diffmerge.diffdata.impl.EComparisonImpl;
 import org.eclipse.emf.diffmerge.generic.api.IComparison;
 import org.eclipse.emf.diffmerge.impl.policies.DefaultDiffPolicy;
@@ -29,14 +28,19 @@ public class BoxesBenchmarks {
 	@Benchmark
 	public void EMFDiffMerge(BoxesThreeModelVersionsState state, Blackhole blackhole) throws Exception {
 
-		IEditableModelScope targetScope =
-				new FragmentedModelScope(state.resourceSet.getResource(state.leftURI, true), false);
-		IEditableModelScope referenceScope =
-				new FragmentedModelScope(state.resourceSet.getResource(state.rightURI, true), false);
-		IEditableModelScope ancestorScope =
-				new FragmentedModelScope(state.resourceSet.getResource(state.ancestorURI, true), false);
+		Resource leftResource = state.resourceSet.createResource(state.leftURI);
+		leftResource.load(null);
 
-		IComparison<EObject> comparison = new EComparisonImpl(targetScope, referenceScope, ancestorScope);
+		Resource rightResource = state.resourceSet.createResource(state.rightURI);
+		rightResource.load(null);
+
+		Resource ancestorResource = state.resourceSet.createResource(state.ancestorURI);
+		ancestorResource.load(null);
+
+		IComparison<EObject> comparison = new EComparisonImpl(
+				new FragmentedModelScope(leftResource, false),
+				new FragmentedModelScope(rightResource, false),
+				new FragmentedModelScope(ancestorResource, false));
 		comparison.compute(new DefaultMatchPolicy(), new DefaultDiffPolicy(), new DefaultMergePolicy(), null);
 
 		blackhole.consume(comparison.getRemainingDifferences());
@@ -45,10 +49,16 @@ public class BoxesBenchmarks {
 	@Benchmark
 	public void EMFCompare(BoxesThreeModelVersionsState state, Blackhole blackhole) throws Exception {
 
-		IComparisonScope scope = new DefaultComparisonScope(
-				state.resourceSet.getResource(state.leftURI, true),
-				state.resourceSet.getResource(state.rightURI, true),
-				state.resourceSet.getResource(state.ancestorURI, true));
+		Resource leftResource = state.resourceSet.createResource(state.leftURI);
+		leftResource.load(null);
+
+		Resource rightResource = state.resourceSet.createResource(state.rightURI);
+		rightResource.load(null);
+
+		Resource ancestorResource = state.resourceSet.createResource(state.ancestorURI);
+		ancestorResource.load(null);
+
+		IComparisonScope scope = new DefaultComparisonScope(leftResource, rightResource, ancestorResource);
 
 		// omit ordering check because of an existing bug as of now
 		//  https://bugs.eclipse.org/bugs/show_bug.cgi?id=432497
@@ -77,6 +87,7 @@ public class BoxesBenchmarks {
 
 		Resource resource = state.resourceSet.createResource(state.leftURI);
 		resource.load(null);
+
 		blackhole.consume(resource.getContents());
 	}
 }

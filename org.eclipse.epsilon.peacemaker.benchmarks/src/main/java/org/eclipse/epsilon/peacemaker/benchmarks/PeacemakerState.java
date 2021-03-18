@@ -62,7 +62,7 @@ public class PeacemakerState {
 				modelsPath.getPath(numElems, numConflicts, PSLConflictModelsGenerator.CONFLICTED));
 	}
 
-	@Setup(Level.Iteration)
+	@Setup(Level.Invocation)
 	public void prepareResourceSet() throws Exception {
 		resourceSet = getResourceSet();
 
@@ -70,7 +70,7 @@ public class PeacemakerState {
 				"*", new PeacemakerResourceFactory());
 	}
 
-	@TearDown(Level.Iteration)
+	@TearDown(Level.Invocation)
 	public void disposeResourceSet() {
 		resourceSet = null;
 	}

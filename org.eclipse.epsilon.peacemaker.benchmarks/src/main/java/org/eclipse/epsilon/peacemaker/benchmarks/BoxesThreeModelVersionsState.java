@@ -53,12 +53,12 @@ public class BoxesThreeModelVersionsState {
 				numElems, numConflicts, PSLConflictModelsGenerator.ANCESTOR));
 	}
 
-	@Setup(Level.Iteration)
+	@Setup(Level.Invocation)
 	public void prepareResourceSet() throws Exception {
 		resourceSet = getResourceSet();
 	}
 
-	@TearDown(Level.Iteration)
+	@TearDown(Level.Invocation)
 	public void disposeResourceSet() {
 		resourceSet = null;
 	}

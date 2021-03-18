@@ -323,7 +323,7 @@ public class BoxesConflictModelsGenerator {
 	protected void saveMergedResource(String leftPath, String ancestorPath,
 			String rightPath, String conflictedPath) throws Exception {
 
-		ProcessBuilder pb = new ProcessBuilder("git", "merge-file", "-p", leftPath, ancestorPath, rightPath);
+		ProcessBuilder pb = new ProcessBuilder("git", "merge-file", "--diff3", "-p", leftPath, ancestorPath, rightPath);
 		pb.directory(new File(System.getProperty("user.dir")));
 		pb.redirectOutput(new File(conflictedPath));
 		Process process = pb.start();

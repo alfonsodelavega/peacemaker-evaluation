@@ -28,6 +28,16 @@ public class PSLBenchmarks {
 	}
 
 	@Benchmark
+	public void ParallelPeacemaker(PeacemakerState state, Blackhole blackhole) throws Exception {
+
+		PeacemakerResource resource = (PeacemakerResource) state.resourceSet.createResource(state.conflictedURI);
+		resource.setParallelLoad(true);
+		resource.load(null);
+
+		blackhole.consume(resource.getConflicts());
+	}
+
+	@Benchmark
 	public void EMFDiffMerge(PSLThreeModelVersionsState state, Blackhole blackhole) throws Exception {
 
 		Resource leftResource = state.resourceSet.createResource(state.leftURI);

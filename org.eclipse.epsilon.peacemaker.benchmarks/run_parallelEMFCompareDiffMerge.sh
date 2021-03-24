@@ -10,8 +10,5 @@
 # o   - output file (defaults to jhm-result.csv)
 # rf  - results format (csv, json, anything else?)
 
-# the "\." before emf diffmerge and emf compare prevents from running parallel tests for all benchmarks
-# "Peacemaker" also includes "ParallelPeacemaker" benchmarks
-
 java -jar target/benchmarks.jar -foe true -bm avgt -tu ms -f 1 -i 10 -wi 5 -r 2 -w 2 -rf csv \
-	"\.EMFDiffMerge" "\.EMFCompare" Peacemaker XMILoad
+	-p modelsPathName=UpdateDeleteTasks ParallelEMFDiffMerge ParallelEMFCompare

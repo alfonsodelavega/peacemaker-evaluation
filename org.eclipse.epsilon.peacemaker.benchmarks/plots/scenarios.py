@@ -40,13 +40,13 @@ plt.style.use('seaborn-white')
 
 plt.rc("font", family="sans-serif")
 
-plt.rc("text", usetex=False)
+plt.rc("text", usetex=True)
 
-SMALL_SIZE = 14
-MEDIUM_SIZE = 16
+SMALL_SIZE = 18
+MEDIUM_SIZE = 20
 
 plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
-plt.rc('axes', titlesize=22)     # fontsize of the axes title
+plt.rc('axes', titlesize=24)     # fontsize of the axes title
 plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
 plt.rc('xtick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
 plt.rc('ytick', labelsize=SMALL_SIZE)    # fontsize of the tick labels
@@ -67,6 +67,7 @@ def plot_scenario(dfsc, ax):
     ax.set_ylim(bottom=0)
     ax.set_xlim(0)
     ax.legend()
+    ax.tick_params(axis=u'both', which=u'both',length=5)
 
 def plot_approach(ax, df, label, marker, color):
     ax.plot(df[c_elems],
@@ -99,6 +100,8 @@ ax.set_ylabel("Conflict detection time (ms)")
 ax.set_title("DoubleUpdate Conflicts")
 plot_scenario(df[df[c_bench] == "DoubleUpdateTasks"], ax)
 
+ax.tick_params(axis=u'both', which=u'both',length=5)
+
 f.tight_layout()
 f.savefig("{}_scenarios12.pdf".format(filename), bbox_inches='tight')
 
@@ -122,11 +125,10 @@ df_aux = dfsc[dfsc[c_tool] == "ParallelEMFDiffMerge"]
 ax.plot(df_aux[c_elems],
         df_aux[c_score],
         label="Parallel Load EMF DiffMerge",
-        marker="o",
+        marker="x",
         color="black")
 
 ax.legend()
-
 
 f.tight_layout()
 f.savefig("{}_scenarios1_parallel.pdf".format(filename), bbox_inches='tight')
@@ -143,18 +145,21 @@ ax.set_title("UpdateDelete, 10% extra changes")
 ax.set_ylim(top=22500)
 s = "UpdateDeleteTasks10PercChanges"
 plot_scenario(df[df[c_bench] == s], ax)
+ax.set_ylim(bottom=0, top=16000)
 
 ax = axes[0,1]
 ax.set_title("UpdateDelete, 50% extra changes")
 ax.set_ylim(top=22500)
 s = "UpdateDeleteTasks50PercChanges"
 plot_scenario(df[df[c_bench] == s], ax)
+ax.set_ylim(bottom=0, top=16000)
 
 ax = axes[0,2]
 ax.set_title("UpdateDelete, 100% extra changes")
 ax.set_ylim(top=22500)
 s = "UpdateDeleteTasks100PercChanges"
 plot_scenario(df[df[c_bench] == s], ax)
+ax.set_ylim(bottom=0, top=16000)
 
 ax = axes[1,0]
 ax.set_title("UpdateDelete, 10% conflicts")
@@ -162,18 +167,21 @@ ax.set_xlabel("Number of project tasks")
 ax.set_ylabel("Conflict detection time (ms)")
 s = "UpdateDeleteTasks10PercConflicts"
 plot_scenario(df[df[c_bench] == s], ax)
+ax.set_ylim(bottom=0, top=14000)
 
 ax = axes[1,1]
 ax.set_title("UpdateDelete, 50% conflicts")
 ax.set_xlabel("Number of project tasks")
 s = "UpdateDeleteTasks50PercConflicts"
 plot_scenario(df[df[c_bench] == s], ax)
+ax.set_ylim(bottom=0, top=14000)
 
 ax = axes[1,2]
 ax.set_title("UpdateDelete, 100% conflicts")
 ax.set_xlabel("Number of project tasks")
 s = "UpdateDeleteTasks100PercConflicts"
 plot_scenario(df[df[c_bench] == s], ax)
+ax.set_ylim(bottom=0, top=14000)
 
 
 f.tight_layout()
@@ -191,18 +199,21 @@ ax.set_xlabel("Number of boxes")
 ax.set_title("UpdateDelete, Box1 instances")
 s = "UpdateDeleteBox1"
 plot_scenario(df[df[c_bench] == s], ax)
+ax.set_ylim(bottom=0, top=9000)
 
 ax = axes[1]
 ax.set_xlabel("Number of boxes")
 ax.set_title("UpdateDelete, Box10 instances")
 s = "UpdateDeleteBox10"
 plot_scenario(df[df[c_bench] == s], ax)
+ax.set_ylim(bottom=0, top=9000)
 
 ax = axes[2]
 ax.set_xlabel("Number of boxes")
 ax.set_title("UpdateDelete, Box20 instances")
 s = "UpdateDeleteBox20"
 plot_scenario(df[df[c_bench] == s], ax)
+ax.set_ylim(bottom=0, top=9000)
 
 f.tight_layout()
 f.savefig("{}_scenario4.pdf".format(filename), bbox_inches='tight')
@@ -220,61 +231,94 @@ print(score("UpdateDeleteBox20", "EMFCompare", 100000))
 def time_reduction(score1, score2):
     return 100 * (score1 - score2) / score1
 
-# score2 is XX% faster than score1
-def faster_than(score1, score2):
-    return 100 * (score1 - score2) / score2
+# score2 is X times faster than score1
+def times_faster(score1, score2):
+    return times_from_reduction(time_reduction(score1, score2))
+
+def times_from_reduction(reduction):
+    return 100 / (100 - reduction)
 
 print(time_reduction(2000, 1000))
-print(faster_than(2000, 1000))
+print(time_reduction(1000, 2000))
+print(times_faster(2000, 1000))
 
 # %%
-benchmarks = df[c_bench].unique()
 elems = [50000, 100000, 150000, 200000]
 
-# General comparisons
-for bench in benchmarks:
-    print("\n" + "*" * 50)
+def avg_fun(bench, tool1, tool2, funct):
+    accum = 0
+    for elem in elems:
+        value = funct(score(bench, tool1, elem),
+                      score(bench, tool2, elem))
+        accum += value
+        print("{} vs {}, {}: {:.2f}".format(
+            tool1, tool2, elem, value))
+    return accum / len(elems)
+
+def avg_reduction(bench, tool1, tool2):
+    return avg_fun(bench, tool1, tool2, time_reduction)
+
+def avg_times(bench, tool1, tool2):
+    return avg_fun(bench, tool1, tool2, times_faster)
+
+# for different benchmarks
+def extra_avg_fun(bench1, bench2, tool1, tool2, funct):
+    accum = 0
+    for elem in elems:
+        value = funct(score(bench1, tool1, elem),
+                      score(bench2, tool2, elem))
+        accum += value
+        print("{} vs {}, {}: {:.2f}".format(
+            tool1, tool2, elem, value))
+    return accum / len(elems)
+
+def extra_avg_reduction(bench1, bench2, tool1, tool2):
+    return extra_avg_fun(bench1, bench2, tool1, tool2, time_reduction)
+
+def extra_avg_times(bench1, bench2, tool1, tool2):
+    return extra_avg_fun(bench1, bench2, tool1, tool2, times_faster)
+
+#%%
+# Scenario 1
+
+def analyse_benchmark(bench):
+    print("*" * 50)
     print(bench)
     print("*" * 50)
+    print()
     for tool in [c_emfdiffmerge, c_emfcompare, c_pm]:
-        accum = 0
+        if (tool != c_pm):
+            print("200K Score for {}: {:.2f} s".format(
+                tool, score(bench, tool, 200000)))
+            print("Average reduction {} vs PM: {:.2f}%".format(
+              tool, avg_reduction(bench, tool, c_pm)))
+            print()
 
-        print("200K Score for {}: {:.2f} s".format(tool, score(bench, tool, 200000)))
-
-        for elem in elems:
-            value = time_reduction(score(bench, tool, elem),
-                                   score(bench, c_pm, elem))
-            accum += value
-            print("{} vs PM {}: {:.2f}% reduction".format(
-                tool, elem, value))
-        print("Average reduction {} vs PM: {:.2f}%".format(
-              tool, accum / len(elems)))
+        print("Average reduction {} vs PM Parallel: {:.2f}%".format(
+              tool, avg_reduction(bench, tool, c_pm_parallel)))
         print()
 
-        accum = 0
-        for elem in elems:
-            value = time_reduction(score(bench, tool, elem),
-                                   score(bench, c_pm_parallel, elem))
-            accum += value
-            print("{} vs PM Parallel {}: {:.2f}% reduction".format(
-                tool, elem, value))
-        print("Average reduction {} vs PM Par: {:.2f}%".format(
-              tool, accum / len(elems)))
+    print("200K Score for {}: {:.2f} s".format(
+            c_pm_parallel, score(bench, c_pm_parallel, 200000)))
+    print()
+
+    for tool in [c_emfdiffmerge, c_emfcompare, c_pm, c_pm_parallel]:
+        print("{} times XMI Load: {:.2f}".format(
+              tool, avg_times(bench, tool, c_xmiload)))
         print()
 
-print("@" * 50)
+analyse_benchmark("UpdateDeleteTasks")
 
 #%%
 # Improvements of double update for pm and pm par
 
 for tool in [c_pm, c_pm_parallel]:
-    accum = 0
-    for elem in elems:
-        value = time_reduction(score("UpdateDeleteTasks", tool, elem),
-                               score("DoubleUpdateTasks", tool, elem))
-        accum += value
-    print("Average reduction UpdateDelete {} vs DoubleUpdate {}: {:.2f}%".format(
-            tool, tool, accum / len(elems)))
+    print("Avg red. UpdateDelete vs DoubleUpdate {}: {:.2f}%"
+          .format(tool,
+                  extra_avg_reduction("UpdateDeleteTasks",
+                                      "DoubleUpdateTasks",
+                                      tool,
+                                      tool)))
     print()
 
 # %%
@@ -283,11 +327,68 @@ print("@" * 50)
 
 for tool, par_tool in [(c_emfdiffmerge, "Parallel" + c_emfdiffmerge),
                        (c_emfcompare, "Parallel" + c_emfcompare)]:
-    accum = 0
-    for elem in elems:
-        value = time_reduction(score("UpdateDeleteTasks", tool, elem),
-                               score("UpdateDeleteTasks", par_tool, elem))
-        accum += value
-    print("UpdateDelete Average reduction {} vs {}: {:.2f}%".format(
-            tool, par_tool, accum / len(elems)))
+
+    print("UpdateDelete Average reduction {} vs {}: {:.2f}%"
+          .format(tool,
+                  par_tool,
+                  avg_reduction("UpdateDeleteTasks", tool, par_tool)))
     print()
+
+#%%
+# Scenario 3, extra changes
+benchmarks = ['UpdateDeleteTasks10PercChanges',
+              'UpdateDeleteTasks50PercChanges',
+              'UpdateDeleteTasks100PercChanges']
+base_bench = "UpdateDeleteTasks"
+
+for bench in benchmarks:
+    for tool in [c_emfdiffmerge, c_emfcompare, c_pm, c_pm_parallel]:
+        print("Avg red. {} vs UpdateDelete {}: {:.2f}%"
+          .format(bench, tool,
+                  extra_avg_reduction(base_bench,
+                                      bench,
+                                      tool,
+                                      tool)))
+        print()
+
+#%%
+# Scenario 3, conflicts
+benchmarks = ['UpdateDeleteTasks10PercConflicts',
+              'UpdateDeleteTasks50PercConflicts',
+              'UpdateDeleteTasks100PercConflicts']
+base_bench = "UpdateDeleteTasks"
+
+for tool in [c_emfdiffmerge, c_emfcompare, c_pm, c_pm_parallel]:
+    for bench in benchmarks:
+        print("Avg red. {} vs UpdateDelete {}: {:.2f}%"
+          .format(bench, tool,
+                  extra_avg_reduction(base_bench,
+                                      bench,
+                                      tool,
+                                      tool)))
+        print()
+
+#%%
+# Scenario 4, xmi load times
+for bench in ['UpdateDeleteBox1', 'UpdateDeleteBox10', 'UpdateDeleteBox20']:
+    print("XMI Load score for {} 200K: {:.2f}"
+          .format(bench, score(bench, c_xmiload, 200000)))
+
+# %%
+# Scenario 4, boxes1 against box10 and box20
+benchmarks = ['UpdateDeleteBox10', 'UpdateDeleteBox20']
+base_bench =
+
+for tool in [c_emfdiffmerge, c_emfcompare, c_pm, c_pm_parallel]:
+    for bench in benchmarks:
+        print("Avg red. {} vs Box1 {}: {:.2f}%"
+          .format(bench, tool,
+                  extra_avg_reduction(base_bench,
+                                      bench,
+                                      tool,
+                                      tool)))
+        print()
+
+# %%
+# Scenario 4, Box20
+analyse_benchmark("UpdateDeleteBox20")

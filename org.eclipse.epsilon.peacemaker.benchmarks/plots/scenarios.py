@@ -38,12 +38,16 @@ df = df.drop(["Benchmark"], axis=1)
 #%%
 plt.style.use('seaborn-white')
 
-plt.rc("font", family="sans-serif")
-
-plt.rc("text", usetex=True)
+plt.rcParams.update({
+    "text.usetex": True,
+    "font.family": "sans-serif",
+    "font.sans-serif": ["Computer Modern Sans Serif"],
+    "text.latex.preamble" : "\\usepackage{sfmath}"})
 
 SMALL_SIZE = 18
 MEDIUM_SIZE = 20
+
+title_pad = 8
 
 plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
 plt.rc('axes', titlesize=24)     # fontsize of the axes title
@@ -91,13 +95,13 @@ axes = f.subplots(nrows=2, ncols=1)
 
 ax = axes[0]
 ax.set_ylabel("Conflict detection time (ms)")
-ax.set_title("UpdateDelete Conflicts")
+ax.set_title("UpdateDelete Conflicts", pad=title_pad)
 plot_scenario(df[df[c_bench] == "UpdateDeleteTasks"], ax)
 
 ax = axes[1]
 ax.set_xlabel("Number of project tasks")
 ax.set_ylabel("Conflict detection time (ms)")
-ax.set_title("DoubleUpdate Conflicts")
+ax.set_title("DoubleUpdate Conflicts", pad=title_pad)
 plot_scenario(df[df[c_bench] == "DoubleUpdateTasks"], ax)
 
 ax.tick_params(axis=u'both', which=u'both',length=5)
@@ -111,7 +115,7 @@ f = plt.figure(figsize=(6,6))
 ax = f.subplots(nrows=1, ncols=1)
 
 ax.set_ylabel("Conflict detection time (ms)")
-ax.set_title("UpdateDelete Conflicts")
+ax.set_title("$UpdateDelete Conflicts$", pad=title_pad)
 plot_scenario(df[df[c_bench] == "UpdateDeleteTasks"], ax)
 
 dfsc = df[df[c_bench] == "UpdateDeleteTasks"]
@@ -141,28 +145,28 @@ axes = f.subplots(nrows=2, ncols=3)
 
 ax = axes[0,0]
 ax.set_ylabel("Conflict detection time (ms)")
-ax.set_title("UpdateDelete, 10% extra changes")
+ax.set_title("UpdateDelete, 10\% extra changes", pad=title_pad)
 ax.set_ylim(top=22500)
 s = "UpdateDeleteTasks10PercChanges"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=16000)
 
 ax = axes[0,1]
-ax.set_title("UpdateDelete, 50% extra changes")
+ax.set_title("UpdateDelete, 50\% extra changes", pad=title_pad)
 ax.set_ylim(top=22500)
 s = "UpdateDeleteTasks50PercChanges"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=16000)
 
 ax = axes[0,2]
-ax.set_title("UpdateDelete, 100% extra changes")
+ax.set_title("UpdateDelete, 100\% extra changes", pad=title_pad)
 ax.set_ylim(top=22500)
 s = "UpdateDeleteTasks100PercChanges"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=16000)
 
 ax = axes[1,0]
-ax.set_title("UpdateDelete, 10% conflicts")
+ax.set_title("UpdateDelete, 10\% conflicts", pad=title_pad)
 ax.set_xlabel("Number of project tasks")
 ax.set_ylabel("Conflict detection time (ms)")
 s = "UpdateDeleteTasks10PercConflicts"
@@ -170,14 +174,14 @@ plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=14000)
 
 ax = axes[1,1]
-ax.set_title("UpdateDelete, 50% conflicts")
+ax.set_title("UpdateDelete, 50\% conflicts", pad=title_pad)
 ax.set_xlabel("Number of project tasks")
 s = "UpdateDeleteTasks50PercConflicts"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=14000)
 
 ax = axes[1,2]
-ax.set_title("UpdateDelete, 100% conflicts")
+ax.set_title("UpdateDelete, 100\% conflicts", pad=title_pad)
 ax.set_xlabel("Number of project tasks")
 s = "UpdateDeleteTasks100PercConflicts"
 plot_scenario(df[df[c_bench] == s], ax)
@@ -196,21 +200,21 @@ axes = f.subplots(nrows=1, ncols=3)
 ax = axes[0]
 ax.set_ylabel("Conflict detection time (ms)")
 ax.set_xlabel("Number of boxes")
-ax.set_title("UpdateDelete, Box1 instances")
+ax.set_title("UpdateDelete, Box1 instances", pad=title_pad)
 s = "UpdateDeleteBox1"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=9000)
 
 ax = axes[1]
 ax.set_xlabel("Number of boxes")
-ax.set_title("UpdateDelete, Box10 instances")
+ax.set_title("UpdateDelete, Box10 instances", pad=title_pad)
 s = "UpdateDeleteBox10"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=9000)
 
 ax = axes[2]
 ax.set_xlabel("Number of boxes")
-ax.set_title("UpdateDelete, Box20 instances")
+ax.set_title("UpdateDelete, Box20 instances", pad=title_pad)
 s = "UpdateDeleteBox20"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=9000)
@@ -377,18 +381,20 @@ for bench in ['UpdateDeleteBox1', 'UpdateDeleteBox10', 'UpdateDeleteBox20']:
 # %%
 # Scenario 4, boxes1 against box10 and box20
 benchmarks = ['UpdateDeleteBox10', 'UpdateDeleteBox20']
-base_bench =
+base_bench = 'UpdateDeleteBox1'
 
 for tool in [c_emfdiffmerge, c_emfcompare, c_pm, c_pm_parallel]:
     for bench in benchmarks:
         print("Avg red. {} vs Box1 {}: {:.2f}%"
-          .format(bench, tool,
-                  extra_avg_reduction(base_bench,
-                                      bench,
-                                      tool,
-                                      tool)))
+              .format(bench, tool,
+                      extra_avg_reduction(base_bench,
+                                          bench,
+                                          tool,
+                                          tool)))
         print()
 
 # %%
 # Scenario 4, Box20
 analyse_benchmark("UpdateDeleteBox20")
+
+# %%

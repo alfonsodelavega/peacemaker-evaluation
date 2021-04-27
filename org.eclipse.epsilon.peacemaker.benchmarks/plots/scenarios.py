@@ -9,7 +9,7 @@ import numpy as np
 if len(sys.argv) == 2:
     filename = sys.argv[1]
 else:
-    filename = "../jmh-e700123-result.csv"
+    filename = "../jmh-e8e5d7-result.csv"
 
 c_tool = "Tool"
 c_bench = "modelsPathName"

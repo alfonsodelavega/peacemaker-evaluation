@@ -58,10 +58,21 @@ plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 
 #%%
 
+blue_dark = "#1965B0"
+blue_light = "#7BAFDE"
+
+red_dark = "#DC050C"
+red_light = "#EE8026"
+
+green_dark = "#4EB265"
+green_light = "#CAE0AB"
+
+violet_dark = "#882E72"
+
 measurements = [c_emfdiffmerge, c_emfcompare, c_pm, c_pm_parallel, c_xmiload]
 labels = ["EMF DiffMerge", "EMF Compare", "Peacemaker", "Parallel Peacemaker", "XMI Load"]
 markers = ["x", "o", "^", "v", "s"]
-colors = ["#1965B0", "#7BAFDE", "#4EB265", "#EE8026", "#DC050C"]
+colors = [blue_dark, green_dark, red_dark, red_light, violet_dark]
 
 def plot_scenario(dfsc, ax):
 
@@ -111,34 +122,46 @@ f.savefig("{}_scenarios12.pdf".format(filename), bbox_inches='tight')
 
 #%%
 # Scenario1 with parallel EMFCompare & DiffMerge
-f = plt.figure(figsize=(6,6))
+def swap_legend_item(handles, labels, _from, _to):
+    handles[_to], handles[_from] = handles[_from], handles[_to]
+    labels[_to], labels[_from] = labels[_from], labels[_to]
+
+f = plt.figure(figsize=(7,6))
 ax = f.subplots(nrows=1, ncols=1)
 
 ax.set_ylabel("Conflict detection time (ms)")
-ax.set_title("$UpdateDelete Conflicts$", pad=title_pad)
+ax.set_title("UpdateDelete Conflicts", pad=title_pad)
 plot_scenario(df[df[c_bench] == "UpdateDeleteTasks"], ax)
 
 dfsc = df[df[c_bench] == "UpdateDeleteTasks"]
 df_aux = dfsc[dfsc[c_tool] == "ParallelEMFCompare"]
-ax.plot(df_aux[c_elems],
-        df_aux[c_score],
-        label="Parallel Load EMF Compare",
-        marker="o",
-        color="grey")
+
+plot_approach(ax, df_aux, "Parallel Load EMF Compare", "D", green_light)
+
 df_aux = dfsc[dfsc[c_tool] == "ParallelEMFDiffMerge"]
-ax.plot(df_aux[c_elems],
-        df_aux[c_score],
-        label="Parallel Load EMF DiffMerge",
-        marker="x",
-        color="black")
+plot_approach(ax, df_aux, "Parallel Load EMF DiffMerge", "X", blue_light)
 
 ax.legend()
+
+handles, labels = ax.get_legend_handles_labels()
+new_handles = []
+new_labels = []
+
+new_order = [0, 6, 1, 5, 2, 3, 4]
+
+for order in new_order:
+    new_handles.append(handles[order])
+    new_labels.append(labels[order])
+
+ax.legend(new_handles, new_labels)
 
 f.tight_layout()
 f.savefig("{}_scenarios1_parallel.pdf".format(filename), bbox_inches='tight')
 
 #%%
 # Scenario3
+
+plt.rc('legend', fontsize=20)
 
 f = plt.figure(figsize=(18,12))
 axes = f.subplots(nrows=2, ncols=3)
@@ -194,8 +217,14 @@ f.savefig("{}_scenario3.pdf".format(filename), bbox_inches='tight')
 # %%
 # Scenario 4
 
+plt.rc('legend', fontsize=20)
+
 f = plt.figure(figsize=(18,6))
 axes = f.subplots(nrows=1, ncols=3)
+
+plt.yticks()
+
+top_y_lim = 9000
 
 ax = axes[0]
 ax.set_ylabel("Conflict detection time (ms)")
@@ -203,21 +232,25 @@ ax.set_xlabel("Number of boxes")
 ax.set_title("UpdateDelete, Box1 instances", pad=title_pad)
 s = "UpdateDeleteBox1"
 plot_scenario(df[df[c_bench] == s], ax)
-ax.set_ylim(bottom=0, top=9000)
+ax.legend(loc="upper left")
+ax.set_ylim(bottom=0, top=top_y_lim)
+ax.set_yticks(np.arange(0, top_y_lim + 1, 1500))
 
 ax = axes[1]
 ax.set_xlabel("Number of boxes")
 ax.set_title("UpdateDelete, Box10 instances", pad=title_pad)
 s = "UpdateDeleteBox10"
 plot_scenario(df[df[c_bench] == s], ax)
-ax.set_ylim(bottom=0, top=9000)
+ax.set_ylim(bottom=0, top=top_y_lim)
+ax.set_yticks(np.arange(0, top_y_lim + 1, 1500))
 
 ax = axes[2]
 ax.set_xlabel("Number of boxes")
 ax.set_title("UpdateDelete, Box20 instances", pad=title_pad)
 s = "UpdateDeleteBox20"
 plot_scenario(df[df[c_bench] == s], ax)
-ax.set_ylim(bottom=0, top=9000)
+ax.set_ylim(bottom=0, top=top_y_lim)
+ax.set_yticks(np.arange(0, top_y_lim + 1, 1500))
 
 f.tight_layout()
 f.savefig("{}_scenario4.pdf".format(filename), bbox_inches='tight')

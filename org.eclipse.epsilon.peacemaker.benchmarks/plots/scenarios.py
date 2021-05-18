@@ -129,6 +129,7 @@ def swap_legend_item(handles, labels, _from, _to):
 f = plt.figure(figsize=(7,6))
 ax = f.subplots(nrows=1, ncols=1)
 
+ax.set_xlabel("Number of project tasks")
 ax.set_ylabel("Conflict detection time (ms)")
 ax.set_title("UpdateDelete Conflicts", pad=title_pad)
 plot_scenario(df[df[c_bench] == "UpdateDeleteTasks"], ax)
@@ -348,8 +349,9 @@ analyse_benchmark("UpdateDeleteTasks")
 
 #%%
 # Improvements of double update for pm and pm par
+print ("DoubleUpdate improvement over UpdateDelete\n")
 
-for tool in [c_pm, c_pm_parallel]:
+for tool in [c_emfdiffmerge, c_emfcompare, c_pm, c_pm_parallel]:
     print("Avg red. UpdateDelete vs DoubleUpdate {}: {:.2f}%"
           .format(tool,
                   extra_avg_reduction("UpdateDeleteTasks",

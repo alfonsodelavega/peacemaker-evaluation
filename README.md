@@ -1,6 +1,6 @@
 # Peacemaker performance evaluation
 
-This instructions explain how to run the performance evaluation used to compare [Peacemaker](https://github.com/epsilonlabs/peacemaker) with model-based model merge approaches. Scripts are provided to generate models and for running the benchmarks.
+These instructions explain how to run the performance evaluation used to compare [Peacemaker](https://github.com/epsilonlabs/peacemaker) with model-based model merge approaches. Scripts are provided to generate models and for running the benchmarks.
 
 When not mentioned otherwise, instructions are to be run from the `org.eclipse.epsilon.peacemaker.benchmarks` directory. These instructions have been tested in Mac OS Catalina and Ubuntu 20.04.
 

@@ -4,6 +4,8 @@
 import pandas as pd
 import sys
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+from itertools import chain
 import numpy as np
 
 if len(sys.argv) == 2:
@@ -101,7 +103,7 @@ def plot_approach(ax, df, label, marker, color):
 #%%
 # Scenarios 1 and 2
 
-f = plt.figure(figsize=(6,12))
+f = plt.figure(figsize=(8,12))
 axes = f.subplots(nrows=2, ncols=1)
 
 ax = axes[0]
@@ -117,6 +119,13 @@ plot_scenario(df[df[c_bench] == "DoubleUpdateTasks"], ax)
 
 ax.tick_params(axis=u'both', which=u'both',length=5)
 
+for ax in axes:
+    ax.get_xaxis().set_major_formatter(
+        ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+    ax.get_yaxis().set_major_formatter(
+        ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+
+
 f.tight_layout()
 f.savefig("{}_scenarios12.pdf".format(filename), bbox_inches='tight')
 
@@ -126,7 +135,7 @@ def swap_legend_item(handles, labels, _from, _to):
     handles[_to], handles[_from] = handles[_from], handles[_to]
     labels[_to], labels[_from] = labels[_from], labels[_to]
 
-f = plt.figure(figsize=(7,6))
+f = plt.figure(figsize=(8,7))
 ax = f.subplots(nrows=1, ncols=1)
 
 ax.set_xlabel("Number of project tasks")
@@ -143,6 +152,11 @@ df_aux = dfsc[dfsc[c_tool] == "ParallelEMFDiffMerge"]
 plot_approach(ax, df_aux, "Parallel Load EMF DiffMerge", "X", blue_light)
 
 ax.legend()
+
+ax.get_xaxis().set_major_formatter(
+    ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+ax.get_yaxis().set_major_formatter(
+    ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 
 handles, labels = ax.get_legend_handles_labels()
 new_handles = []
@@ -164,7 +178,7 @@ f.savefig("{}_scenarios1_parallel.pdf".format(filename), bbox_inches='tight')
 
 plt.rc('legend', fontsize=20)
 
-f = plt.figure(figsize=(18,12))
+f = plt.figure(figsize=(20,12))
 axes = f.subplots(nrows=2, ncols=3)
 
 ax = axes[0,0]
@@ -175,6 +189,7 @@ s = "UpdateDeleteTasks10PercChanges"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=16000)
 
+
 ax = axes[0,1]
 ax.set_title("UpdateDelete, 50\% extra changes", pad=title_pad)
 ax.set_ylim(top=22500)
@@ -182,12 +197,14 @@ s = "UpdateDeleteTasks50PercChanges"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=16000)
 
+
 ax = axes[0,2]
 ax.set_title("UpdateDelete, 100\% extra changes", pad=title_pad)
 ax.set_ylim(top=22500)
 s = "UpdateDeleteTasks100PercChanges"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=16000)
+
 
 ax = axes[1,0]
 ax.set_title("UpdateDelete, 10\% conflicts", pad=title_pad)
@@ -197,12 +214,14 @@ s = "UpdateDeleteTasks10PercConflicts"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=14000)
 
+
 ax = axes[1,1]
 ax.set_title("UpdateDelete, 50\% conflicts", pad=title_pad)
 ax.set_xlabel("Number of project tasks")
 s = "UpdateDeleteTasks50PercConflicts"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=14000)
+
 
 ax = axes[1,2]
 ax.set_title("UpdateDelete, 100\% conflicts", pad=title_pad)
@@ -211,6 +230,12 @@ s = "UpdateDeleteTasks100PercConflicts"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=14000)
 
+
+for ax in (chain.from_iterable(axes)):
+    ax.get_xaxis().set_major_formatter(
+        ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+    ax.get_yaxis().set_major_formatter(
+        ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 
 f.tight_layout()
 f.savefig("{}_scenario3.pdf".format(filename), bbox_inches='tight')
@@ -252,6 +277,12 @@ s = "UpdateDeleteBox20"
 plot_scenario(df[df[c_bench] == s], ax)
 ax.set_ylim(bottom=0, top=top_y_lim)
 ax.set_yticks(np.arange(0, top_y_lim + 1, 1500))
+
+for ax in axes:
+    ax.get_xaxis().set_major_formatter(
+        ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
+    ax.get_yaxis().set_major_formatter(
+        ticker.FuncFormatter(lambda x, p: format(int(x), ',')))
 
 f.tight_layout()
 f.savefig("{}_scenario4.pdf".format(filename), bbox_inches='tight')

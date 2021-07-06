@@ -48,6 +48,12 @@ public class PeacemakerState {
 
 	// used in the benchmark
 	public ResourceSet resourceSet;
+
+	public String leftPath;
+	public String rightPath;
+	public String ancestorPath;
+	public String conflictedPath;
+
 	public URI conflictedURI;
 
 	@Setup(Level.Trial)
@@ -57,9 +63,12 @@ public class PeacemakerState {
 		if (modelsPath == null) {
 			modelsPath = BoxesConflictModelsGenerator.getModelsPath(modelsPathName);
 		}
+		leftPath = modelsPath.getPath(numElems, numConflicts, PSLConflictModelsGenerator.LEFT);
+		rightPath = modelsPath.getPath(numElems, numConflicts, PSLConflictModelsGenerator.RIGHT);
+		ancestorPath = modelsPath.getPath(numElems, numConflicts, PSLConflictModelsGenerator.ANCESTOR);
+		conflictedPath = modelsPath.getPath(numElems, numConflicts, PSLConflictModelsGenerator.CONFLICTED);
 
-		conflictedURI = URI.createFileURI(
-				modelsPath.getPath(numElems, numConflicts, PSLConflictModelsGenerator.CONFLICTED));
+		conflictedURI = URI.createFileURI(conflictedPath);
 	}
 
 	@Setup(Level.Invocation)

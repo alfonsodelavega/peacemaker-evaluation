@@ -20,8 +20,8 @@ c_conflicts = "numConflicts"
 c_score = "Score"
 c_error = "Score Error (99.9%)"
 
-c_pm = "Peacemaker"
-c_pm_parallel = "ParallelPeacemaker"
+c_pm = "PeacemakerWithMerge"
+c_pm_parallel = "ParallelPeacemakerWithMerge"
 c_emfcompare = "EMFCompare"
 c_emfdiffmerge = "EMFDiffMerge"
 c_xmiload = "XMILoad"
@@ -29,6 +29,9 @@ c_xmiload = "XMILoad"
 #%%
 df = pd.read_csv(filename)
 df.head()
+
+#%%
+df["Benchmark"].unique()
 
 #%%
 df.columns = [col.replace("Param: ", "") for col in df.columns]
@@ -99,7 +102,10 @@ def plot_approach(ax, df, label, marker, color):
                 capsize=5.0,
                 ecolor=color)
 
-
+#%%
+# avoid dots in the output file
+filename = filename.replace(".csv", "_csv")
+print(filename)
 #%%
 # Scenarios 1 and 2
 

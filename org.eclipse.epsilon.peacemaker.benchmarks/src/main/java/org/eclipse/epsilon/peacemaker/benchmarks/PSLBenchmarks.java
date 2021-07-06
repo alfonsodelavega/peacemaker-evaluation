@@ -1,5 +1,6 @@
 package org.eclipse.epsilon.peacemaker.benchmarks;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,39 @@ public class PSLBenchmarks {
 
 	@Benchmark
 	public void ParallelPeacemaker(PeacemakerState state, Blackhole blackhole) throws Exception {
+
+		PeacemakerResource resource = (PeacemakerResource) state.resourceSet.createResource(state.conflictedURI);
+		resource.setParallelLoad(true);
+		resource.load(null);
+
+		blackhole.consume(resource.getConflicts());
+	}
+
+	@Benchmark
+	public void PeacemakerWithMerge(PeacemakerState state, Blackhole blackhole) throws Exception {
+
+		ProcessBuilder pb = new ProcessBuilder("git", "merge-file", "--diff3", "-p",
+				state.leftPath, state.ancestorPath, state.rightPath);
+		pb.directory(new File(System.getProperty("user.dir")));
+		pb.redirectOutput(new File(state.conflictedPath));
+		Process process = pb.start();
+		process.waitFor();
+
+		PeacemakerResource resource = (PeacemakerResource) state.resourceSet.createResource(state.conflictedURI);
+		resource.load(null);
+
+		blackhole.consume(resource.getConflicts());
+	}
+
+	@Benchmark
+	public void ParallelPeacemakerWithMerge(PeacemakerState state, Blackhole blackhole) throws Exception {
+
+		ProcessBuilder pb = new ProcessBuilder("git", "merge-file", "--diff3", "-p",
+				state.leftPath, state.ancestorPath, state.rightPath);
+		pb.directory(new File(System.getProperty("user.dir")));
+		pb.redirectOutput(new File(state.conflictedPath));
+		Process process = pb.start();
+		process.waitFor();
 
 		PeacemakerResource resource = (PeacemakerResource) state.resourceSet.createResource(state.conflictedURI);
 		resource.setParallelLoad(true);
